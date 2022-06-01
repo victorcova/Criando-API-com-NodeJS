@@ -1,0 +1,18 @@
+DEMANDA
+Ver todos os filmes disponíveis
+{GET}/movies/all
+
+Pesquisar um filme por nome
+{GET}/movies/:title
+
+Pesquisar um filme por gênero
+{GET}/movies/genre
+
+Cadastrar novo filme
+{POST}/movies/
+
+Deletar um filme do sistema
+{DELETE}/movies/:id
+
+Atualizar título do filme
+{patch}/movies/:title

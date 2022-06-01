@@ -3,17 +3,23 @@ const router = express.Router();
 
 const controller = require("../controllers/moviesControllers");
 
-// Mensagem genérica: // {GET}/movies/
+// Mensagem genérica
 router.get("/", controller.home);
 
-// {GET}/movies/all
-router.get("/all" , controller.getAll);
+// DEMANDA: visualizar todas os filmes
+router.get("/all", controller.getAll)
 
-// {GET}movies/all
-router.get("all", controller.getAll);
+// DEMANDA: visualizar todos os filmes da api do ghlibi
+router.get("/all/ghlibi", controller.getAllGhlibiMovies)
 
-// {GET}movies/ghibli
-router.get("/ghibli", controller.getAllGhibliMovies);
+// DEMANDA: cadastrar um filme
+router.post("/create", controller.createMoovie);
+
+// DEMANDA: atualizar um filme
+router.patch("/updateTitle/:id", controller.updateMoovieById);
+
+// DEMANDA: excluir um filme
+router.delete("/delete/:id", controller.deleteMoovieById);
 
 
 module.exports = router;

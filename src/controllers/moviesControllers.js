@@ -1,47 +1,99 @@
-const res = require("express/lib/response");
 const movies = require("../models/movies.json");
-const axios = require("axios");
-
+const axios = require('axios');
 
 // criar funções que controlam as informações, recebendo as requisições e enviando as respostas
 
+// configurar uma rota padrão de apresentação da API (opcional)
 const home = (req, res) => {
-    // console.log('REQUISIÇÃO', req);
     res.status(200).send({
-        "message": "Olá, seja bem vindo ao TeraFlix, uma API maneira de filmes!"
-    });    
+        "message": "Olá pessoa, seja bem vinda ao Teraflix!"
+    })
 };
 
-// visualizar todos os filmes
+// retornar todos os filmes
 const getAll = (req, res) => {
     res.status(200).send(movies);
-}
+};
+
+// retornar filmes de uma api terceira
+
+const getAllGhlibiMovies = async (req, res) => {
+    const response = await axios.get('https://ghibliapi.herokuapp.com/films')
+    const data = await response.data;
+
+    res.status(200).send(data);
+};
 
 
-// Cadastrar novo filme
+// cadastrar novo filme
+const createMoovie = (req, res) => {
+    // acessar os dados enviados na requisição
+    let requestedTitle = req.body.title;
+    let requestedGenre = req.body.genre;
 
-// Deletar um filme do sistema
+    if (requestedTitle && requestedGenre) {
+        let newMovie = {
+            "id": Math.random().toString(32).substr(2, 6),
+            "addedAt": new Date(),
+            "title": requestedTitle,
+            "genre": requestedGenre
+        };
 
-// Atualizar título do filme
+        movies.push(newMovie);
 
-
-// Outro exemplo: Consumir lista de filmes de API terceira utilizando axios
-getAllGhibliMovies = async (req, res) => {
-    try{ // tente fazer...
-        const response = await axios.get("https://ghibliapi.herokuapp.com/films"); // vai esperar e aguardar a leitura dos dados da url
-        const data = response.data;
-        res.status(200).send(data);
-    } catch(e) { // ...se não conseguir pegue o erro
-        console.err(e);
+        // enviar uma resposta
+        res.status(201).send({
+            "mensagem": "Filme adicionado com sucesso",
+            newMovie
+        });
+    } else {
+        res.status(404).send({
+            "message": "Não foi possível cadastrar um novo filme. Por favor, insira todas as informações necessárias"
+        })
     }
+};
 
+// deletar um filme
+const deleteMoovieById = (req, res) => {    
+    const requestedId = req.params.id;
+    const filteredMovie = movies.find(movie => movie.id == requestedId);
 
+    const index = movies.indexOf(filteredMovie);
 
-}
+    movies.splice(index, 1);
+
+    res.status(200).json([{
+        "mensagem": "Filme deletado com sucesso",
+        movies
+    }]);
+};
+
+// atualizar o título do filme
+const updateMoovieById = (req, res) => {
+    // pegar os dados da requisição
+    let requestedId = req.params.id;
+    let newTitle = req.body.title;
+    let newGenre = req.body.genre;
+
+    // achar o item da lista que tem o mesmo id
+    let filteredMovie = movies.find(movie => movie.id == requestedId);
+
+    // o título do post filtrado seja igual ao título que vem da requisição
+    filteredMovie.title = newTitle;
+    filteredMovie.genre = newGenre;
+
+    res.status(200).send({
+        "mensagem": "Título atualizado com sucesso",
+        filteredMovie
+    });
+};
 
 
 module.exports = {
     home,
     getAll,
-    getAllGhibliMovies
+    getAllGhlibiMovies,
+    createMoovie,
+    deleteMoovieById,
+    updateMoovieById
 };
